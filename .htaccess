@@ -1,0 +1,90 @@
+
+# BEGIN WordPress
+
+# WPhtC: Disable directory browsing
+# For security reasons, Option all cannot be overridden.
+#Options All -Indexes
+Options ExecCGI Includes IncludesNOEXEC SymLinksIfOwnerMatch -Indexes
+
+# WPhtC: Protect WP-config.php
+<files wp-config.php>
+order allow,deny
+deny from all
+</files>
+
+# WPhtC: Protect .htaccess file
+<files ~ "^.*\.([Hh][Tt][Aa])">
+order allow,deny
+deny from all
+</files>
+
+# WPhtC: Protect comments.php
+RewriteCond %{REQUEST_METHOD} POST
+RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
+RewriteCond %{HTTP_REFERER} !.*http://calvarychapelcharlotte.com.* [OR]
+RewriteCond %{HTTP_USER_AGENT} ^$
+RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+
+# Added this to deny access to files and plugins
+RewriteCond %{REQUEST_URI} !^/wp-content/plugins/file/to/exclude\.php
+RewriteCond %{REQUEST_URI} !^/wp-content/plugins/directory/to/exclude/
+RewriteRule wp-content/plugins/(.*\.php)$ - [R=404,L]
+RewriteCond %{REQUEST_URI} !^/wp-content/themes/file/to/exclude\.php
+RewriteCond %{REQUEST_URI} !^/wp-content/themes/directory/to/exclude/
+RewriteRule wp-content/themes/(.*\.php)$ - [R=404,L]
+</IfModule>
+
+# END WordPress
+
+# BLOCK UNWANTED REFERRALS
+
+<IfModule mod_rewrite.c>
+ RewriteEngine on
+ RewriteCond %{HTTP_REFERER} 4WEBMASTERS.ORG [NC,OR]
+ RewriteCond %{HTTP_REFERER} TRAFFICMONETIZE.ORG [NC]
+ RewriteRule .* - [F]
+</ifModule>
+
+# END BLOCK UNWANTED REFERRALS
+    
+# Protect the .htaccess
+<files .htaccess="header.php">
+order allow,deny
+deny from all
+</files>
+
+<Files ~ "^.*\.([Hh][Tt][Aa])">
+order allow,deny
+deny from all
+satisfy all
+</Files>
+
+<Files wp-config.php>
+order allow,deny
+deny from all
+</Files>
+
+
+# Wordfence WAF
+<IfModule mod_suphp.c>
+	suPHP_ConfigPath '/home2/brettsa1/public_html/church'
+</IfModule>
+<Files ".user.ini">
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+	Order deny,allow
+	Deny from all
+</IfModule>
+</Files>
+
+# END Wordfence WAF
