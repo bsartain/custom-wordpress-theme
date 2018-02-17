@@ -1,4 +1,4 @@
-Brett Sartain Custom Wordpress Theme
+Custom Wordpress Theme
 ======
 This is a child theme I created for various uses. I'm using the HTML5 template http://themehybrid.com/themes/kepler as a base and everything else is custom WordPress api's.
 
